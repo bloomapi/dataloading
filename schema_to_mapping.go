@@ -21,13 +21,13 @@ func SchemaToMapping(schemas []SourceSchema) (*SourceMapping) {
 			keySource[fieldIndex] = field.FieldName
 		}
 
-		destFields[0] = KeyedMappingField{
+		destFields[0] = MappingField{
 			Source: keySource,
 			Dest: "id",
 		}
 
 		for fieldIndex, field := range schema.Fields {
-			destFields[fieldIndex + 1] = DirectMappingField{
+			destFields[fieldIndex + 1] = MappingField{
 				Source: field.FieldName,
 				Dest: field.FieldName,
 				Type: field.FieldType,

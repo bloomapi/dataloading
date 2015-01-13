@@ -39,11 +39,23 @@ func CreateCmd(desc Description) {
 
 	switch arg {
 	case "bootstrap":
-		
+		err := Bootstrap()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	case "fetch":
-		
+		err := Fetch(desc)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	case "drop":
-		
+		err := Drop()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	case "search-index":
 	case "schema":
 		schema, err := schema(desc)
