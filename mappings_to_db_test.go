@@ -34,7 +34,15 @@ func TestMappingToCreate(t *testing.T) {
 	create := MappingToCreate(sourceMapping)
 	spec.Expect(create).ToEqual(`CREATE TABLE dest(
 id uuid,
-two bigint
+two bigint,
+bloom_created_at timestamp
+);
+CREATE TABLE dest_revisions(
+id uuid,
+two bigint,
+bloom_created_at timestamp,
+bloom_updated_at timestamp,
+bloom_action character varying(255)
 );
 INSERT INTO sources (id, name) VALUES ('c3f70f05-9179-37f5-93b8-1b8f43d291c7', 'source');
 `)
@@ -44,6 +52,7 @@ func TestMappingToDrop(t *testing.T) {
 	spec := tests.Spec(t)
 	create := MappingToDrop(sourceMapping)
 	spec.Expect(create).ToEqual(`DROP TABLE IF EXISTS dest;
+DROP TABLE IF EXISTS dest_revisions;
 DELETE FROM source_versions USING sources WHERE sources.id = source_versions.source_id AND sources.name = 'source';
 DELETE FROM sources WHERE sources.name = 'source';
 `)

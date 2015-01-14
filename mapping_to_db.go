@@ -36,7 +36,39 @@ func MappingToCreate(mapping *SourceMapping) string {
 				if fieldIndex + 1 != len(destination.Fields) {
 					create += ",\n"
 				} else {
-					create += "\n"
+					create += ",\n"
+					create += "bloom_created_at timestamp\n"
+				}
+			}
+
+			create += ");\n"
+		}
+
+		for _, destination := range source.Destinations {
+			create += "CREATE TABLE " + destination.Name + "_revisions(\n"
+
+			for fieldIndex, field := range destination.Fields {
+				var sqlType string
+				switch field.Source.(type) {
+				case string:
+					if field.Type == "" {
+						sqlType = "string"
+					} else {
+						sqlType = sqlTypes[field.Type]
+					}
+				case []interface{}:
+					sqlType = "uuid"
+				}
+
+				create += field.Dest + " " + sqlType
+
+				if fieldIndex + 1 != len(destination.Fields) {
+					create += ",\n"
+				} else {
+					create += ",\n"
+					create += "bloom_created_at timestamp,\n"
+					create += "bloom_updated_at timestamp,\n"
+					create += "bloom_action character varying(255)\n"
 				}
 			}
 
@@ -57,6 +89,7 @@ func MappingToDrop(mapping *SourceMapping) string {
 	for _, source := range sources {
 		for _, destination := range source.Destinations {
 			drop += "DROP TABLE IF EXISTS " + destination.Name + ";\n"
+			drop += "DROP TABLE IF EXISTS " + destination.Name + "_revisions;\n"
 		}
 
 		drop += "DELETE FROM source_versions USING sources WHERE sources.id = source_versions.source_id AND sources.name = '" + source.Name + "';\n"

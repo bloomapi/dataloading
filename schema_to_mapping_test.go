@@ -26,7 +26,7 @@ func TestSchemaToMapping(t *testing.T) {
 	spec.Expect(sourceMapping.Sources[0].Destinations[0].Name).ToEqual("Hello")
 	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[0].Source.([]string)[0]).ToEqual("one")
 	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[0].Dest).ToEqual("id")
-	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[1].Source).ToEqual("one")
-	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[1].Dest).ToEqual("one")
-	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[1].Type).ToEqual("bigint")
+	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[2].Source).ToEqual("one")
+	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[2].Dest).ToEqual("one")
+	spec.Expect(sourceMapping.Sources[0].Destinations[0].Fields[2].Type).ToEqual("bigint")
 }

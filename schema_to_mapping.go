@@ -4,7 +4,7 @@ func SchemaToMapping(schemas []SourceSchema) (*SourceMapping) {
   mappings := SourceMapping{ make([]Mapping, len(schemas)) }
 
 	for schemaIndex, schema := range schemas {
-		destFields := make([]MappingField, len(schema.Fields) + 1)
+		destFields := make([]MappingField, len(schema.Fields) + 2)
 
 		mappings.Sources[schemaIndex] = Mapping{
 			Name: schema.SourceName,
@@ -26,8 +26,13 @@ func SchemaToMapping(schemas []SourceSchema) (*SourceMapping) {
 			Dest: "id",
 		}
 
+		destFields[1] = MappingField{
+			Source: keySource,
+			Dest: "revision",
+		}
+
 		for fieldIndex, field := range schema.Fields {
-			destFields[fieldIndex + 1] = MappingField{
+			destFields[fieldIndex + 2] = MappingField{
 				Source: field.FieldName,
 				Dest: field.FieldName,
 				Type: field.FieldType,

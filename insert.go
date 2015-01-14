@@ -160,7 +160,7 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string) erro
 				return
 			}
 			
-			err = bloomdb.Upsert(db, destination.Name, columns, channels[destination.Name])
+			err = bloomdb.Sync(db, destination.Name, columns, channels[destination.Name])
 			if err != nil {
 				// TODO: what to do on error!?!?
 				fmt.Println(err)

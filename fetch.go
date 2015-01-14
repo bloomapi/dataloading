@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"github.com/gocodo/bloomdb"
-
-	"fmt"
 )
 
 // - Get current versions of all files
@@ -32,8 +30,6 @@ func Fetch(desc Description) error {
 		return err
 	}
 
-	fmt.Println(sources)
-
 	bdb := bloomdb.CreateDB()
 	conn, err := bdb.SqlConnection()
 	if err != nil {
@@ -57,8 +53,6 @@ func Fetch(desc Description) error {
 			sourcesByName[source.Name] = append(sourcesByName[source.Name], source)
 		}
 	}
-
-	fmt.Println(sourcesByName)
 
 	for sourceName, sources := range sourcesByName {
 		sort.Sort(ByVersion(sources))
