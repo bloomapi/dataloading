@@ -1,5 +1,21 @@
 package bloomsource
 
+import (
+	"strings"
+	"regexp"
+)
+
+var nonFriendlyCharacters = regexp.MustCompile(`[^a-zA-Z0-9_]+`)
+var tooManyUnderscores = regexp.MustCompile(`_+`)
+
+func friendlyName(name string) string {
+	friendly := strings.ToLower(name)
+	friendly = nonFriendlyCharacters.ReplaceAllString(friendly, "_")
+	friendly = tooManyUnderscores.ReplaceAllString(friendly, "_")
+	friendly = strings.Trim(friendly, "_")
+	return friendly
+}
+
 func SchemaToMapping(schemas []SourceSchema) (*SourceMapping) {
   mappings := SourceMapping{ make([]Mapping, len(schemas)) }
 
@@ -10,7 +26,7 @@ func SchemaToMapping(schemas []SourceSchema) (*SourceMapping) {
 			Name: schema.SourceName,
 			Destinations: []Destination{
 				Destination{
-					Name: schema.SourceName,
+					Name: friendlyName(schema.SourceName),
 					Fields: destFields,
 				},
 			},
@@ -34,8 +50,12 @@ func SchemaToMapping(schemas []SourceSchema) (*SourceMapping) {
 		for fieldIndex, field := range schema.Fields {
 			destFields[fieldIndex + 2] = MappingField{
 				Source: field.FieldName,
-				Dest: field.FieldName,
+				Dest: friendlyName(field.FieldName),
 				Type: field.FieldType,
+			}
+
+			if field.FieldType == "string" {
+				destFields[fieldIndex + 2].MaxLength = field.MaxLength * 2
 			}
 		}
 	}

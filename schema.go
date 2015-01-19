@@ -36,6 +36,7 @@ var types = []fieldType{
 type FieldInfo struct {
 	FieldName string
 	FieldType string
+	MaxLength int
 }
 
 type SourceSchema struct {
@@ -69,6 +70,7 @@ func schema (desc Description) ([]SourceSchema, error) {
 		}
 
 		discoveredTypeIndexes := make([]int, len(fieldNames))
+		discoveredMaxLengths := make([]int, len(fieldNames))
 
 		for _, source := range sources {
 			reader, err := desc.Reader(source)
@@ -86,11 +88,17 @@ func schema (desc Description) ([]SourceSchema, error) {
 				}
 
 				for fieldIndex, fieldName := range fieldNames {
+					value := row.Value(fieldName)
+					valueLength := len(value)
+
+					if discoveredMaxLengths[fieldIndex] < valueLength {
+						discoveredMaxLengths[fieldIndex] = valueLength
+					}
+
 					if discoveredTypeIndexes[fieldIndex] == len(types) {
 						continue
 					}
 
-					value := row.Value(fieldName)
 					for {
 						if discoveredTypeIndexes[fieldIndex] == len(types) {
 							break
@@ -121,6 +129,7 @@ func schema (desc Description) ([]SourceSchema, error) {
 			sourceSchemas[sourceIndex].Fields[fieldIndex] = FieldInfo{
 				fieldName,
 				fieldType,
+				discoveredMaxLengths[fieldIndex],
 			}
 		}
 

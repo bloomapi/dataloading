@@ -20,5 +20,6 @@ type MappingField struct {
 	Source interface{}
 	Dest string
 	Type string ",omitempty"
+	MaxLength int ",omitempty"
 	Mapping map[string]string ",omitempty"
 }

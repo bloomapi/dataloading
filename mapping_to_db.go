@@ -1,13 +1,16 @@
 package bloomsource
 
-import "github.com/gocodo/bloomdb"
+import (
+	"strconv"
+	"github.com/gocodo/bloomdb"
+)
 
 var sqlTypes = map[string]string{
 	"datetime": "datetime",
 	"bigint": "bigint",
 	"int": "int",
 	"decimal": "decimal",
-	"string": "character varying(255)",
+	"string": "character varying",
 }
 
 func MappingToCreate(mapping *SourceMapping) string {
@@ -23,9 +26,17 @@ func MappingToCreate(mapping *SourceMapping) string {
 				switch field.Source.(type) {
 				case string:
 					if field.Type == "" {
-						sqlType = "string"
+						sqlType = sqlTypes["string"]
 					} else {
 						sqlType = sqlTypes[field.Type]
+					}
+
+					if sqlType == "character varying" {
+						if field.MaxLength != 0 {
+							sqlType += "(" + strconv.Itoa(field.MaxLength) + ")"
+						} else {
+							sqlType += "(255)"
+						}
 					}
 				case []interface{}:
 					sqlType = "uuid"
@@ -52,9 +63,17 @@ func MappingToCreate(mapping *SourceMapping) string {
 				switch field.Source.(type) {
 				case string:
 					if field.Type == "" {
-						sqlType = "string"
+						sqlType = sqlTypes["string"]
 					} else {
 						sqlType = sqlTypes[field.Type]
+					}
+
+					if sqlType == "character varying" {
+						if field.MaxLength != 0 {
+							sqlType += "(" + strconv.Itoa(field.MaxLength) + ")"
+						} else {
+							sqlType += "(255)"
+						}
 					}
 				case []interface{}:
 					sqlType = "uuid"

@@ -20,7 +20,8 @@ var sourceMapping = &SourceMapping{
 						MappingField{
 							Source: "stwo",
 							Dest: "two",
-							Type: "bigint",
+							Type: "string",
+							MaxLength: 50,
 						},
 					},
 				},
@@ -34,12 +35,12 @@ func TestMappingToCreate(t *testing.T) {
 	create := MappingToCreate(sourceMapping)
 	spec.Expect(create).ToEqual(`CREATE TABLE dest(
 id uuid,
-two bigint,
+two character varying(50),
 bloom_created_at timestamp
 );
 CREATE TABLE dest_revisions(
 id uuid,
-two bigint,
+two character varying(50),
 bloom_created_at timestamp,
 bloom_updated_at timestamp,
 bloom_action character varying(255)
