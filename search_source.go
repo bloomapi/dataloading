@@ -18,6 +18,12 @@ type SearchJoin struct {
 	SourceId string "source_id,omitempty"
 }
 
+type SearchJoinTable struct {
+	Table string
+	SourceId string "source_id"
+	DestId string "dest_id"
+}
+
 type SearchRelationship struct {
 	Include string
 	Name string ",omitempty"
@@ -25,4 +31,5 @@ type SearchRelationship struct {
 	DestId string "dest_id,omitempty"
 	SourceId string "source_id,omitempty"
 	Select []string ",omitempty"
+	Using SearchJoinTable ",omitempty"
 }

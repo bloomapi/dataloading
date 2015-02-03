@@ -63,5 +63,10 @@ func TestMappingToIndex(t *testing.T) {
 	spec := tests.Spec(t)
 	create := MappingToIndex(sourceMapping)
 	spec.Expect(create).ToEqual(`CREATE INDEX ON dest (id);
+CREATE INDEX ON dest_revisions (id);
+CREATE INDEX ON dest (bloom_created_at);
+CREATE INDEX ON dest_revisions (bloom_created_at);
+CREATE INDEX ON dest_revisions (bloom_action);
+CREATE INDEX ON dest_revisions (bloom_updated_at);
 `)
 }

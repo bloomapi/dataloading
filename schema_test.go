@@ -48,6 +48,7 @@ func (d *TestDescription) Available() ([]Source, error) {
 		Source{
 			"TestSource",
 			"Version1.2",
+			"",
 		},
 	}, nil
 }

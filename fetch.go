@@ -76,7 +76,14 @@ func Fetch(desc Description) error {
 				return err
 			}
 
-			err = insert(reader, currentMappingSource, fields)
+			var action string
+			if source.Action == "" {
+				action = "sync"
+			} else {
+				action = source.Action
+			}
+
+			err = insert(reader, currentMappingSource, fields, action)
 			if err != nil {
 				return err
 			}
@@ -94,6 +101,9 @@ func Fetch(desc Description) error {
 			}
 		}
 	}
+
+	//downloader := NewDownloader("./data", nil)
+	//downloader.Clear()
 
 	return nil
 }

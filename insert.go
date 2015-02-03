@@ -38,11 +38,11 @@ func fieldSets(d Destination, fieldNames []string) []fieldSet {
 						Dest: field.Dest,
 						Mapping: field.Mapping,
 					}
-				case []string:
-					origSources := field.Source.([]string)
-					sources := make([]string, len(origSources))
+				case []interface{}:
+					origSources := field.Source.([]interface{})
+					sources := make([]interface{}, len(origSources))
 					for origIndex, origSource := range origSources {
-						sources[origIndex] = strings.Replace(origSource, "{0}", index, -1)
+						sources[origIndex] = strings.Replace(origSource.(string), "{0}", index, -1)
 					}
 
 					set[fieldIndex] = MappingField{
@@ -98,7 +98,7 @@ func writeChannel(fields []MappingField, row Valuable, output chan []string) {
 	output <- values
 }
 
-func insert(valueReader ValueReader, mapping Mapping, sourceNames []string) error {
+func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, action string) error {
 	var wg sync.WaitGroup
 
 	channels := make(map[string] chan []string)
@@ -129,7 +129,17 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string) erro
 			for i, destination := range mapping.Destinations {
 				for _, set := range destFields[i] {
 					if len(destination.Ignore) > 0 {
-						// TODO: Implement
+						ignore := false
+						for ignoreKey, ignoreValue := range destination.Ignore {
+							ignoreKey = strings.Replace(ignoreKey, "{0}", set.capture, 1)
+							if row.Value(ignoreKey) == ignoreValue {
+								ignore = true
+							}
+						}
+
+						if ignore == false {
+							writeChannel(set.fields, row, channels[destination.Name])
+						}
 					} else {
 						writeChannel(set.fields, row, channels[destination.Name])
 					}
@@ -160,7 +170,12 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string) erro
 				return
 			}
 			
-			err = bloomdb.Sync(db, destination.Name, columns, channels[destination.Name])
+			switch (action) {
+			case "sync":
+				err = bloomdb.Sync(db, destination.Name, columns, channels[destination.Name])
+			case "upsert":
+				err = bloomdb.Upsert(db, destination.Name, columns, channels[destination.Name], destination.ParentKey)
+			}
 			if err != nil {
 				// TODO: what to do on error!?!?
 				fmt.Println(err)

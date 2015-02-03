@@ -1,4 +1,4 @@
-package helpers
+package bloomsource
 
 import (
 	"os"
@@ -82,13 +82,13 @@ func NewDownloader(directory string, fetcher Fetcher) *Downloader {
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	cache := loadDownloaderCache(directory)
-
 	if _, err := os.Stat(directory); err != nil {
 		if os.IsNotExist(err) {
 			os.MkdirAll(directory, 0755)
 		}
 	}
+
+	cache := loadDownloaderCache(directory)
 
 	return &Downloader{
 		directory,

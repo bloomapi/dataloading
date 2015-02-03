@@ -11,8 +11,9 @@ type Mapping struct {
 
 type Destination struct {
 	Name string
+	ParentKey string "parent_key,omitempty"
 	Extract string ",omitempty"
-	Ignore []string ",omitempty"
+	Ignore map[string]string ",omitempty"
 	Fields []MappingField
 }
 
@@ -20,6 +21,6 @@ type MappingField struct {
 	Source interface{}
 	Dest string
 	Type string ",omitempty"
-	MaxLength int ",omitempty"
+	MaxLength int "max_length,omitempty"
 	Mapping map[string]string ",omitempty"
 }

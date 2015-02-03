@@ -31,6 +31,12 @@ func CreateCmd(desc Description) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
 	viper.AddConfigPath("./")
+
+	configPath := os.Getenv("BLOOM_CONFIG")
+	if configPath != "" {
+		viper.AddConfigPath(configPath)
+	}
+
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Println(err)

@@ -6,7 +6,7 @@ import (
 )
 
 var sqlTypes = map[string]string{
-	"datetime": "datetime",
+	"datetime": "timestamp",
 	"bigint": "bigint",
 	"int": "int",
 	"decimal": "decimal",
@@ -128,8 +128,14 @@ func MappingToIndex(mapping *SourceMapping) string {
 				switch field.Source.(type) {
 				case []interface{}:
 					index += "CREATE INDEX ON " + destination.Name + " (" + field.Dest + ");\n"
+					index += "CREATE INDEX ON " + destination.Name + "_revisions (" + field.Dest + ");\n"
 				}
 			}
+
+			index += "CREATE INDEX ON " + destination.Name + " (bloom_created_at);\n"
+			index += "CREATE INDEX ON " + destination.Name + "_revisions (bloom_created_at);\n"
+			index += "CREATE INDEX ON " + destination.Name + "_revisions (bloom_action);\n"
+			index += "CREATE INDEX ON " + destination.Name + "_revisions (bloom_updated_at);\n"
 		}
 	}
 

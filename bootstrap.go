@@ -21,6 +21,7 @@ func Bootstrap () error {
 	}
 
 	sql := MappingToCreate(&mapping)
+	indexSql := MappingToIndex(&mapping)
 
 	conn, err := bloomdb.SqlConnection()
 	if err != nil {
@@ -31,6 +32,11 @@ func Bootstrap () error {
 	if err != nil {
 		return err
 	}
+
+	_, err = conn.Exec(indexSql)
+	if err != nil {
+		return err
+	}	
 
 	return nil
 }

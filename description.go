@@ -11,6 +11,7 @@ type ValueReader interface {
 type Source struct {
 	Name string
 	Version string
+	Action string
 }
 
 type ByVersion []Source

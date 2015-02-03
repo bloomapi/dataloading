@@ -6,36 +6,36 @@ import (
 	"github.com/gocodo/bloomsource"
 )
 
-type Reader struct {
+type CsvReader struct {
 	reader  *csv.Reader
 	headers map[string]int
 }
 
-type Row struct {
-	reader *Reader
+type CsvRow struct {
+	reader *CsvReader
 	record []string
 }
 
-func NewCsvReaderNoHeaders(r io.Reader, headers []string) *Reader {
+func NewCsvReaderNoHeaders(r io.Reader, headers []string) *CsvReader {
 	mappedHeaders := map[string]int{}
 	for index, header := range headers {
 		mappedHeaders[header] = index
 	}
 
-	return &Reader{
+	return &CsvReader{
 		reader:  csv.NewReader(r),
 		headers: mappedHeaders,
 	}
 }
 
-func NewCsvReader(r io.Reader) *Reader {
-	return &Reader{
+func NewCsvReader(r io.Reader) *CsvReader {
+	return &CsvReader{
 		reader:  csv.NewReader(r),
 		headers: make(map[string]int),
 	}	
 }
 
-func (r *Reader) Read() (bloomsource.Valuable, error) {
+func (r *CsvReader) Read() (bloomsource.Valuable, error) {
 	if len(r.headers) == 0 {
 		row, err := r.reader.Read()
 		if err != nil {
@@ -52,13 +52,13 @@ func (r *Reader) Read() (bloomsource.Valuable, error) {
 		return nil, err
 	}
 
-	return &Row{
+	return &CsvRow{
 		reader: r,
 		record: row,
 	}, nil
 }
 
-func (r *Row) Value(index string) string {
+func (r *CsvRow) Value(index string) string {
 	rowIndex := r.reader.headers[index]
 	return r.record[rowIndex]
 }

@@ -4,6 +4,8 @@ import (
 	"time"
 	"bytes"
 	"text/template"
+	
+	"fmt"
 )
 
 type syncInfo struct {
@@ -22,10 +24,13 @@ var fns = template.FuncMap{
 
 func searchSourceToUpdateQuery(searchSource SearchSource, lastIndexed time.Time) string {
 	buf := new(bytes.Buffer)
-	t, _ := template.New("search.sql.template").Funcs(fns).Parse(searchSql)
+	t, err := template.New("search.sql.template").Funcs(fns).Parse(searchSql)
 	sLastIndexed := lastIndexed.Format(time.RFC3339)
 	info := syncInfo{searchSource, sLastIndexed}
-	_ = t.Execute(buf, info)
+	err = t.Execute(buf, info)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return buf.String()
 }
 
@@ -33,5 +38,5 @@ func searchSourceToDeleteQuery(searchSource SearchSource, lastIndexed time.Time)
 	pivot := searchSource.Pivot
 	idField := searchSource.Id
 	fLastIndex := lastIndexed.Format(time.RFC3339)
-	return "SELECT " + pivot + "." + idField + " FROM " + pivot + "_revisions WHERE bloom_action = 'DELETE' AND bloom_updated_at > '" + fLastIndex + "';"
+	return "SELECT " + pivot + "_revisions." + idField + " FROM " + pivot + "_revisions WHERE bloom_action = 'DELETE' AND bloom_updated_at > '" + fLastIndex + "';"
 }
