@@ -102,7 +102,7 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 	}
 
 	if mapping.SearchId == "id" {
-		mapping.Select = append(mapping.Select, "id")
+		mapping.Select = append(mapping.Select, mapping.Pivot + ".id")
 	}
 
 	if mapping.Joins == nil {

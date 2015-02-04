@@ -1,7 +1,7 @@
 package bloomsource
 
 var searchSql = `
-SELECT row_to_json(root), {{.SearchSource.SearchId}} FROM
+SELECT row_to_json(root), root.{{.SearchSource.SearchId}} FROM
 (SELECT
 {{range $i, $e := .SearchSource.Select}}{{$e}}{{if len $.SearchSource.Select | sub 1 | eq $i | not}},{{end}}{{end}}
 {{range $i, $e := .SearchSource.Relationships}}
