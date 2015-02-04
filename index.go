@@ -101,6 +101,9 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 		mapping.SearchId = mapping.Id
 	}
 
+	if mapping.SearchId == "id" {
+		mapping.Select = append(mapping.Select, "id")
+	}
 
 	if mapping.Joins == nil {
 		mapping.Joins = []SearchJoin{}
@@ -112,7 +115,7 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 
 	for i, join := range mapping.Joins {
 		if join.SourceId == "" {
-			mapping.Joins[i].SourceId = "id"
+			mapping.Joins[i].SourceId = mapping.Id
 		}
 
 		if join.DestId == "" {
@@ -122,7 +125,7 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 
 	for i, relationship := range mapping.Relationships {
 		if relationship.SourceId == "" {
-			mapping.Relationships[i].SourceId = "id"
+			mapping.Relationships[i].SourceId = mapping.Id
 		}
 
 		if relationship.DestId == "" {
@@ -225,6 +228,7 @@ func Index() error {
 		
 		insertRows, err := conn.Query(query)
 		if err != nil {
+			fmt.Println("Error with query:", query)
 			return err
 		}
 		defer insertRows.Close()
