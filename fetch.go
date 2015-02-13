@@ -102,8 +102,8 @@ func Fetch(desc Description) error {
 		}
 	}
 
-	//downloader := NewDownloader("./data", nil)
-	//downloader.Clear()
+	downloader := NewDownloader("./data", nil)
+	downloader.Clear()
 
 	return nil
 }
