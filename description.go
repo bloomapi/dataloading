@@ -1,7 +1,7 @@
 package bloomsource
 
 type Valuable interface {
-	Value(string) string
+	Value(string) (string, bool)
 }
 
 type ValueReader interface {

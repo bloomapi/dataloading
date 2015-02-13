@@ -65,19 +65,22 @@ func (r *TabReader) Read() (bloomsource.Valuable, error) {
 	}, nil
 }
 
-func (r *TabRow) Value(index string) string {
+func (r *TabRow) Value(index string) (string, bool) {
 	var (
 		trueEnd int
 	)
 
-	field := r.reader.fieldMap[index]
+	field, ok := r.reader.fieldMap[index]
+	if ok == false {
+		return "", false
+	}
 
 	if field.StartIndex > uint64(len(r.record)) {
-		return ""
+		return "", true
 	}
 
 	if len(r.record) == 0 {
-		return ""
+		return "", true
 	} else if field.EndIndex > uint64(len(r.record)) {
 		trueEnd = len(r.record)
 	} else {
@@ -86,5 +89,5 @@ func (r *TabRow) Value(index string) string {
 
 	value := r.record[(field.StartIndex - 1):trueEnd]
 	value = strings.TrimSpace(value)
-	return value
+	return value, true
 }

@@ -16,6 +16,7 @@ func showUsage() {
 	fmt.Printf("%s fetch        # fetch latest data and add to BloomAPI\n", os.Args[0])
 	fmt.Printf("%s drop         # remove all tables\n", os.Args[0])
 	fmt.Printf("%s search-index # index in elasticsearch\n", os.Args[0])
+	fmt.Printf("%s search-drop  # remove elasticsearch types\n", os.Args[0])
 	fmt.Printf("%s schema       # fetch latest data and scan schema\n", os.Args[0])
 }
 
@@ -64,6 +65,12 @@ func CreateCmd(desc Description) {
 		}
 	case "search-index":
 		err := Index()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	case "search-drop":
+		err := IndexDrop()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

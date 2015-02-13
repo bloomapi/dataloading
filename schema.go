@@ -3,6 +3,7 @@ package bloomsource
 import (
 	"regexp"
 	"io"
+	"errors"
 )
 
 type fieldType struct {
@@ -17,15 +18,15 @@ var types = []fieldType{
 	},
 	fieldType{
 		"bigint",
-		regexp.MustCompile(`^\d{10,18}$`),
+		regexp.MustCompile(`^\-?\d{10,18}$`),
 	},
 	fieldType{
 		"int",
-		regexp.MustCompile(`^\d{1,9}$`),
+		regexp.MustCompile(`^\-?\d{1,9}$`),
 	},
 	fieldType{
 		"decimal",
-		regexp.MustCompile(`^\d+\.\d+$`),
+		regexp.MustCompile(`^\-?\d+\.\d+$`),
 	},
 	fieldType{
 		"boolean",
@@ -88,7 +89,10 @@ func schema (desc Description) ([]SourceSchema, error) {
 				}
 
 				for fieldIndex, fieldName := range fieldNames {
-					value := row.Value(fieldName)
+					value, ok := row.Value(fieldName)
+					if !ok {
+						return nil, errors.New("Field '" + fieldName + "' not found in source")
+					}
 					valueLength := len(value)
 
 					if discoveredMaxLengths[fieldIndex] < valueLength {

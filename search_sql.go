@@ -3,7 +3,12 @@ package bloomsource
 var searchSql = `
 SELECT row_to_json(root), root.{{.SearchSource.SearchId}} FROM
 (SELECT
-{{range $i, $e := .SearchSource.Select}}{{$e}}{{if len $.SearchSource.Select | sub 1 | eq $i | not}},{{end}}{{end}}
+{{range $i, $e := .SearchSource.SelectTypes}}
+{{if eq $e.Type "timestamp without time zone"}}
+to_char({{$e.Name}}, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as {{$e.Name}}
+{{else}}
+{{$e.Name}}
+{{end}}{{if len $.SearchSource.SelectTypes | sub 1 | eq $i | not}},{{end}}{{end}}
 {{range $i, $e := .SearchSource.Relationships}}
 ,
 (
@@ -16,7 +21,13 @@ SELECT row_to_json(root), root.{{.SearchSource.SearchId}} FROM
 	{{end}}
   FROM
   (SELECT 
-  {{range $y, $z := .Select}}{{$z}}{{if len $e.Select | sub 1 | eq $y | not}},{{end}}{{end}}
+  {{range $y, $z := .SelectTypes}}
+  {{if eq $z.Type "timestamp without time zone"}}
+  to_char({{$z.Name}}, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as {{$z.Name}}
+  {{else}}
+  {{$z.Name}}
+  {{end}}
+  {{if len $e.SelectTypes | sub 1 | eq $y | not}},{{end}}{{end}}
   FROM
   {{.Include}} two
   {{if and $e.Using (ne $e.Using.Table "")}}

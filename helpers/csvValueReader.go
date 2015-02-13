@@ -58,7 +58,7 @@ func (r *CsvReader) Read() (bloomsource.Valuable, error) {
 	}, nil
 }
 
-func (r *CsvRow) Value(index string) string {
-	rowIndex := r.reader.headers[index]
-	return r.record[rowIndex]
+func (r *CsvRow) Value(index string) (string, bool) {
+	rowIndex, ok := r.reader.headers[index]
+	return r.record[rowIndex], ok
 }

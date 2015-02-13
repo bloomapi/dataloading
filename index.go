@@ -76,11 +76,11 @@ func tableColumns(conn *sql.DB, table string) ([]tableColumnInfo, error) {
 	return columns, nil
 }
 
-func defaultColumns(columns []tableColumnInfo) []string {
-	filteredColumns := []string{}
+func defaultColumns(columns []tableColumnInfo) []SearchSelect {
+	filteredColumns := []SearchSelect{}
 	for _, column := range columns {
 		if column.Name != "id" && column.Name != "bloom_created_at" && column.Name != "revision" && column.Type != "uuid" {
-			filteredColumns = append(filteredColumns, column.Name)
+			filteredColumns = append(filteredColumns, SearchSelect{ Name: column.Name, Type: column.Type })
 		}
 	}
 
@@ -94,7 +94,14 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 			return err
 		}
 
-		mapping.Select = defaultColumns(columns)
+		mapping.SelectTypes = defaultColumns(columns)
+	} else {
+		for _, s := range mapping.Select {
+			mapping.SelectTypes = append(mapping.SelectTypes, SearchSelect{
+					Name: s,
+					Type: "",
+				})
+		}
 	}
 
 	if mapping.SearchId == "" {
@@ -102,7 +109,10 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 	}
 
 	if mapping.SearchId == "id" {
-		mapping.Select = append(mapping.Select, mapping.Pivot + ".id")
+		mapping.SelectTypes = append(mapping.SelectTypes, SearchSelect{
+			Name: mapping.Pivot + ".id",
+			Type: "uuid",
+		})
 	}
 
 	if mapping.Joins == nil {
@@ -143,7 +153,14 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 				return err
 			}
 			
-			mapping.Relationships[i].Select = defaultColumns(columns)
+			mapping.Relationships[i].SelectTypes = defaultColumns(columns)
+		} else {
+			for _, s := range relationship.Select {
+				relationship.SelectTypes = append(relationship.SelectTypes, SearchSelect{
+						Name: s,
+						Type: "",
+					})
+			}
 		}
 	}
 

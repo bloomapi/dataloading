@@ -20,7 +20,7 @@ func matchPattern(r *zip.ReadCloser, filePattern *regexp.Regexp) (*zip.File, err
 		}
 	}
 
-	return nil, errors.New("File not found in zip")
+	return nil, errors.New("File not found in zip, " + filePattern.String())
 }
 
 func OpenExtractZipReader(filename string, filePattern *regexp.Regexp) (*ReadCloser, error) {

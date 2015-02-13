@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"fmt"
+	"log"
 )
 
 type fieldSet struct {
@@ -75,7 +75,10 @@ func writeChannel(fields []MappingField, row Valuable, output chan []string) {
 	for index, field := range fields {
 		switch field.Source.(type) {
 		case string:
-			value := row.Value(field.Source.(string))
+			value, _ := row.Value(field.Source.(string))
+			/*if !ok {
+				log.Println("Warning: field '" + field.Source.(string) + "' not found") 
+			}*/
 			if len(field.Mapping) != 0 {
 				newValue, ok := field.Mapping[value]
 				if ok {
@@ -88,7 +91,11 @@ func writeChannel(fields []MappingField, row Valuable, output chan []string) {
 			sources := field.Source.([]interface{})
 			toKey := make([]string, len(sources))
 			for sourceId, item := range sources {
-				toKey[sourceId] = row.Value(item.(string))
+				value, _ := row.Value(item.(string))
+				toKey[sourceId] = value
+				/*if !ok {
+					log.Println("Warning: field '" + item.(string) + "' not found") 
+				}*/
 			}
 
 			values[index] = bloomdb.MakeKey(toKey...)
@@ -111,6 +118,9 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 	go func() {
 		defer wg.Done()
 
+		rowCount := 0
+		recordsCount := 0
+
 		destFields := make([][]fieldSet, len(mapping.Destinations))
 		for i, destination := range mapping.Destinations {
 			destFields[i] = fieldSets(destination, sourceNames)
@@ -122,7 +132,7 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 				break
 			} else if err != nil {
 				// TODO: what to do on error!?!?
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 
@@ -130,22 +140,37 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 				for _, set := range destFields[i] {
 					if len(destination.Ignore) > 0 {
 						ignore := false
-						for ignoreKey, ignoreValue := range destination.Ignore {
+						for ignoreKey, ignoreValues := range destination.Ignore {
 							ignoreKey = strings.Replace(ignoreKey, "{0}", set.capture, 1)
-							if row.Value(ignoreKey) == ignoreValue {
-								ignore = true
+							value, _ := row.Value(ignoreKey)
+
+							for _, ignoreValue := range ignoreValues {
+								if value == ignoreValue {
+									ignore = true
+									break
+								}
 							}
 						}
 
-						if ignore == false {
+						if !ignore {
 							writeChannel(set.fields, row, channels[destination.Name])
+							recordsCount += 1
 						}
 					} else {
 						writeChannel(set.fields, row, channels[destination.Name])
+						recordsCount += 1
 					}
 				}
 			}
+
+			rowCount += 1
+
+			if rowCount % 10000 == 0 {
+				log.Printf("Read %d rows of %s with %d resulting records\n", rowCount, mapping.Name, recordsCount)
+			}
 		}
+
+		log.Printf("Read %d rows of %s with %d resulting records\n", rowCount, mapping.Name, recordsCount)
 
 		for _, channel := range channels {
 			close(channel)
@@ -166,7 +191,7 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 			db, err := bdb.SqlConnection()
 			if err != nil {
 				// TODO: what to do on error!?!?
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 			
@@ -178,7 +203,7 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 			}
 			if err != nil {
 				// TODO: what to do on error!?!?
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 		}(destination)

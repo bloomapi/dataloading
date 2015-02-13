@@ -13,7 +13,7 @@ type Destination struct {
 	Name string
 	ParentKey string "parent_key,omitempty"
 	Extract string ",omitempty"
-	Ignore map[string]string ",omitempty"
+	Ignore map[string][]string ",omitempty"
 	Fields []MappingField
 }
 

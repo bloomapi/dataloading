@@ -8,8 +8,14 @@ type SearchSource struct {
 	Id string
 	SearchId string "search_id,omitempty"
 	Select []string ",omitempty"
+	SelectTypes []SearchSelect "select_types,omitempty"
 	Joins []SearchJoin ",omitempty"
 	Relationships []SearchRelationship ",omitempty"
+}
+
+type SearchSelect struct {
+	Name string
+	Type string
 }
 
 type SearchJoin struct {
@@ -31,5 +37,6 @@ type SearchRelationship struct {
 	DestId string "dest_id,omitempty"
 	SourceId string "source_id,omitempty"
 	Select []string ",omitempty"
+	SelectTypes []SearchSelect "select_types,omitempty"
 	Using SearchJoinTable ",omitempty"
 }

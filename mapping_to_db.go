@@ -95,6 +95,11 @@ func MappingToCreate(mapping *SourceMapping) string {
 		}
 
 		source_id := bloomdb.MakeKey(source.Name)
+		for _, destination := range source.Destinations {
+			table_id := bloomdb.MakeKey(source.Name, destination.Name)
+			create += "INSERT INTO source_tables (id, source_id, name) VALUES ('" + table_id + "', '" + source_id + "', '" + destination.Name + "');\n"
+		}
+
 		create += "INSERT INTO sources (id, name) VALUES ('" + source_id + "', '" + source.Name + "');\n";
 	}
 
