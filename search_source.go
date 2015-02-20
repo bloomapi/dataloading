@@ -6,6 +6,7 @@ type SearchSource struct {
 	Name string
 	Pivot string
 	Id string
+	Public bool
 	SearchId string "search_id,omitempty"
 	Select []string ",omitempty"
 	SelectTypes []SearchSelect "select_types,omitempty"

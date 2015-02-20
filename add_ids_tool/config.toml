@@ -1,0 +1,4 @@
+sqlConnStr = "postgres://localhost/bloomapi?sslmode=disable"
+searchHosts = [
+  "localhost"
+]

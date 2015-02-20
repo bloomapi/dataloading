@@ -156,7 +156,7 @@ func fillSearchSourceBlanks(conn *sql.DB, mapping *SearchSource) error {
 			mapping.Relationships[i].SelectTypes = defaultColumns(columns)
 		} else {
 			for _, s := range relationship.Select {
-				relationship.SelectTypes = append(relationship.SelectTypes, SearchSelect{
+				mapping.Relationships[i].SelectTypes = append(mapping.Relationships[i].SelectTypes, SearchSelect{
 						Name: s,
 						Type: "",
 					})
@@ -198,7 +198,8 @@ func Index() error {
 		err = conn.QueryRow("SELECT last_updated FROM search_types WHERE name = $1", mapping.Name).Scan(&lastUpdated)
 		if err == sql.ErrNoRows {
 			lastUpdated = time.Unix(0, 0)
-			_, err := conn.Exec("INSERT INTO search_types (name, last_updated, last_checked) VALUES ($1, $2, $2)", mapping.Name, lastUpdated)
+			typeId := bloomdb.MakeKey(mapping.Name)
+			_, err := conn.Exec("INSERT INTO search_types (id, name, last_updated, last_checked, public) VALUES ($1, $2, $3, $3, $4)", typeId, mapping.Name, lastUpdated, mapping.Public)
 			if err != nil {
 				return err
 			}
@@ -271,8 +272,10 @@ func Index() error {
 		}
 
 		indexer.Flush()
+		// There seems to be a bug in elastigo ... unsure why this sometimes fails
+		// Should be fixed at some point ...
+		//indexer.Stop()
 		fmt.Println(indexCount, "Records Indexed in", time.Now().Sub(startTime))
-		indexer.Stop()
 
 		if indexCount > 0 || deleteCount > 0 {
 			_, err = conn.Exec("UPDATE search_types SET last_updated = $1, last_checked = $1 WHERE name = $2", startTime, mapping.Name)
