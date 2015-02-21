@@ -1,6 +1,7 @@
 package bloomsource
 
 import (
+	"os"
 	"fmt"
 	"log"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"database/sql"
 	"gopkg.in/yaml.v2"
 	"github.com/gocodo/bloomdb"
+	"github.com/mattbaird/elastigo/lib"
 )
 
 func deNull(doc map[string]interface{}) {
@@ -194,6 +196,8 @@ func Index() error {
 			return err
 		}
 
+		c := bdb.SearchConnection()
+
 		var lastUpdated time.Time
 		err = conn.QueryRow("SELECT last_updated FROM search_types WHERE name = $1", mapping.Name).Scan(&lastUpdated)
 		if err == sql.ErrNoRows {
@@ -203,11 +207,32 @@ func Index() error {
 			if err != nil {
 				return err
 			}
+			if _, err := os.Stat("searchmappings.json"); !os.IsNotExist(err) {
+				var properties map[string]interface{}
+
+				file, err := ioutil.ReadFile("searchmappings.json")
+				if err != nil {
+					return err
+				}
+
+				err = json.Unmarshal(file, &properties)
+				if err != nil {
+					return err
+				}
+
+				options := elastigo.MappingOptions{
+					Timestamp: elastigo.TimestampOptions{Enabled: true},
+					Properties: properties,
+				}
+
+				err = c.PutMapping("source", mapping.Name, struct{}{}, options)
+				if err != nil {
+					return err
+				}
+			}
 		} else if err != nil {
 			return err
 		}
-
-		c := bdb.SearchConnection()
 
 		indexer := c.NewBulkIndexerErrors(10, 60)
 		indexer.BulkMaxBuffer = 10485760
