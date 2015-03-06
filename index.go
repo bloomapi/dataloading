@@ -264,6 +264,10 @@ func Index() error {
 			indexer.Delete("source", mapping.Name, id, false)
 		}
 
+		if err := rows.Err(); err != nil {
+			return err
+		}
+
 		indexer.Flush()
 		fmt.Println(deleteCount, "Records Deleted in", time.Now().Sub(startTime))
 
@@ -296,10 +300,14 @@ func Index() error {
 			indexer.Index("source", mapping.Name, id, "", nil, doc, false)
 		}
 
+		if err := insertRows.Err(); err != nil {
+			return err
+		}
+
 		indexer.Flush()
-		// There seems to be a bug in elastigo ... unsure why this sometimes fails
+		// There seems to be a bug in elastigo ... unsure why this sometimes blocks indefinitly
 		// Should be fixed at some point ...
-		//indexer.Stop()
+		indexer.Stop()
 		fmt.Println(indexCount, "Records Indexed in", time.Now().Sub(startTime))
 
 		if indexCount > 0 || deleteCount > 0 {
