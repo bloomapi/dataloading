@@ -188,7 +188,7 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 				columns[index] = field.Dest
 			}
 
-			db, err := bdb.SqlConnection()
+			db, err := bdb.NewSqlConnection()
 			if err != nil {
 				// TODO: what to do on error!?!?
 				log.Println(err)
@@ -201,6 +201,13 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 			case "upsert":
 				err = bloomdb.Upsert(db, destination.Name, columns, channels[destination.Name], destination.ParentKey)
 			}
+			if err != nil {
+				// TODO: what to do on error!?!?
+				log.Println(err)
+				return
+			}
+
+			err = db.Close()
 			if err != nil {
 				// TODO: what to do on error!?!?
 				log.Println(err)

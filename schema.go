@@ -14,23 +14,23 @@ type fieldType struct {
 var types = []fieldType{
 	fieldType{
 		"datetime",
-		regexp.MustCompile(`^(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))$`),
+		regexp.MustCompile(`^(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\d)$`),
 	},
 	fieldType{
 		"bigint",
-		regexp.MustCompile(`^\-?\d{10,18}$`),
+		regexp.MustCompile(`^\-?[1-9]\d{9,17}$`),
 	},
 	fieldType{
 		"int",
-		regexp.MustCompile(`^\-?\d{1,9}$`),
+		regexp.MustCompile(`^\-?[1-9]\d{0,8}$`),
 	},
 	fieldType{
 		"decimal",
-		regexp.MustCompile(`^\-?\d+\.\d+$`),
+		regexp.MustCompile(`^\-?\d*\.\d+$`),
 	},
 	fieldType{
 		"boolean",
-		regexp.MustCompile(`^(true|false)$`),
+		regexp.MustCompile(`^(true|false|TRUE|FALSE|True|False)$`),
 	},
 }
 
@@ -108,7 +108,7 @@ func schema (desc Description) ([]SourceSchema, error) {
 							break
 						}
 						match := types[discoveredTypeIndexes[fieldIndex]].Expression.MatchString(value)
-						if match == true {
+						if match == true || value == "" {
 							break
 						}
 						discoveredTypeIndexes[fieldIndex] += 1

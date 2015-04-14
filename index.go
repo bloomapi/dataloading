@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"github.com/gocodo/bloomdb"
 	"github.com/mattbaird/elastigo/lib"
+	"time"
 )
 
 func deNull(doc map[string]interface{}) {
@@ -196,6 +197,8 @@ func Index() error {
 			return err
 		}
 
+		fmt.Println("Processing", mapping.Name)
+
 		c := bdb.SearchConnection()
 
 		var lastUpdated time.Time
@@ -225,7 +228,7 @@ func Index() error {
 					Properties: properties,
 				}
 
-				err = c.PutMapping("source", mapping.Name, struct{}{}, options)
+				err = c.PutMapping(mapping.Name, "main", struct{}{}, options)
 				if err != nil {
 					return err
 				}
@@ -261,7 +264,7 @@ func Index() error {
 				fmt.Println(deleteCount, "Records Deleted in", time.Now().Sub(startTime))
 			}
 
-			indexer.Delete("source", mapping.Name, id, false)
+			indexer.Delete(mapping.Name, "main", id, false)
 		}
 
 		if err := rows.Err(); err != nil {
@@ -297,7 +300,7 @@ func Index() error {
 				fmt.Println(indexCount, "Records Indexed in", time.Now().Sub(startTime))
 			}
 
-			indexer.Index("source", mapping.Name, id, "", nil, doc, false)
+			indexer.Index(mapping.Name, "main", id, "", nil, doc, false)
 		}
 
 		if err := insertRows.Err(); err != nil {
@@ -305,9 +308,21 @@ func Index() error {
 		}
 
 		indexer.Flush()
+		
 		// There seems to be a bug in elastigo ... unsure why this sometimes blocks indefinitly
-		// Should be fixed at some point ...
-		indexer.Stop()
+		// Should be fixed at some point ... current fix is to time out after 20 seconds of trying to Stop
+		stopper := make(chan bool, 1)
+		go func() {
+			indexer.Stop()
+			stopper <- true
+		}
+		select {
+		case _ = <- stopper:
+			fmt.Println("Indexer Stopped")
+		case <- time.After(time.Second * 20):
+			fmt.Println("Indexer Stop Timed out")			
+		}
+
 		fmt.Println(indexCount, "Records Indexed in", time.Now().Sub(startTime))
 
 		if indexCount > 0 || deleteCount > 0 {

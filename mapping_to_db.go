@@ -11,6 +11,7 @@ var sqlTypes = map[string]string{
 	"int": "int",
 	"decimal": "decimal",
 	"string": "character varying",
+	"boolean": "boolean",
 }
 
 func MappingToCreate(mapping *SourceMapping) string {

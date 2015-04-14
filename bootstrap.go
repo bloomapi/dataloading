@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"github.com/gocodo/bloomdb"
+
+	"fmt"
 )
 
 func Bootstrap () error {
@@ -30,6 +32,7 @@ func Bootstrap () error {
 
 	_, err = conn.Exec(sql)
 	if err != nil {
+		fmt.Println("Error executing", sql)
 		return err
 	}
 

@@ -37,6 +37,9 @@ to_char({{$e.Name}}, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as {{$e.Name}}
   {{else}}
     WHERE {{$.SearchSource.Pivot}}.{{.SourceId}} = two.{{.DestId}}
   {{end}}
+  {{if eq .Type "to_one"}}
+  limit 1
+  {{end}}
   ) AS {{.Name}}_table)
 {{end}}
 FROM {{.SearchSource.Pivot}}

@@ -29,7 +29,7 @@ func IndexDrop() error {
 
 	for _, source := range mappings {
 		typeName := source.Name
-		_, err = searchConn.DeleteMapping("source", source.Name)
+		_, err = searchConn.DeleteMapping(source.Name, "main")
 		if err != nil {
 			return err
 		}
