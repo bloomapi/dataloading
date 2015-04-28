@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"github.com/gocodo/bloomdb"
 	"github.com/mattbaird/elastigo/lib"
-	"time"
 )
 
 func deNull(doc map[string]interface{}) {
@@ -315,7 +314,7 @@ func Index() error {
 		go func() {
 			indexer.Stop()
 			stopper <- true
-		}
+		}()
 		select {
 		case _ = <- stopper:
 			fmt.Println("Indexer Stopped")
