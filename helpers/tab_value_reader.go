@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"io"
 	"strings"
-	"github.com/gocodo/bloomsource"
+	"bitbucket.org/gocodo/bloomsource"
 )
 
 type TabReader struct {

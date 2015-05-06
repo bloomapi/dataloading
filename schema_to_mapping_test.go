@@ -2,7 +2,7 @@ package bloomsource
 
 import (
 	"testing"
-	"github.com/gocodo/bloomsource/tests"
+	"bitbucket.org/gocodo/bloomsource/tests"
 )
 
 func TestSchemaToMapping(t *testing.T) {

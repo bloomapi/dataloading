@@ -3,7 +3,7 @@ package helpers
 import (
 	"strings"
 	"testing"
-	"github.com/gocodo/bloomsource/tests"
+	"bitbucket.org/gocodo/bloomsource/tests"
 )
 
 func TestTabValueReaderValue(t *testing.T) {

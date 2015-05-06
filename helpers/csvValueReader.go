@@ -3,7 +3,7 @@ package helpers
 import (
 	"encoding/csv"
 	"io"
-	"github.com/gocodo/bloomsource"
+	"bitbucket.org/gocodo/bloomsource"
 )
 
 type CsvReader struct {

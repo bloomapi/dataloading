@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"io/ioutil"
-	"github.com/gocodo/bloomsource"
+	"bitbucket.org/gocodo/bloomsource"
 	"gopkg.in/yaml.v2"
 	"fmt"
 )

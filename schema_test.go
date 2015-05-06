@@ -3,7 +3,7 @@ package bloomsource
 import (
 	"testing"
 	"io"
-	"github.com/gocodo/bloomsource/tests"
+	"bitbucket.org/gocodo/bloomsource/tests"
 )
 
 type TestReader struct {

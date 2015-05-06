@@ -6,7 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"testing"
-	"github.com/gocodo/bloomsource/tests"
+	"bitbucket.org/gocodo/bloomsource/tests"
 )
 
 type mockReaderCloser struct {
