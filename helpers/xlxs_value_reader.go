@@ -78,5 +78,9 @@ func (r *XlxsReader) Read() (bloomsource.Valuable, error) {
 
 func (r *XlxsRow) Value(index string) (string, bool) {
 	rowIndex, ok := r.reader.headers[index]
-	return r.cells[rowIndex].Value, ok
+	if rowIndex < len(r.cells) {
+		return r.cells[rowIndex].Value, ok
+	} else {
+		return "", ok
+	}
 }
