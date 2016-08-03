@@ -3,6 +3,7 @@ package bloomsource
 import (
 	"sync"
 	"github.com/gocodo/bloomdb"
+	"github.com/spf13/viper"
 	"io"
 	"regexp"
 	"strings"
@@ -105,7 +106,7 @@ func writeChannel(fields []MappingField, row Valuable, output chan []string) {
 	output <- values
 }
 
-func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, action string) error {
+func Insert(valueReader ValueReader, mapping Mapping, sourceNames []string, action string) error {
 	var wg sync.WaitGroup
 
 	channels := make(map[string] chan []string)
@@ -177,7 +178,7 @@ func insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 		}
 	}()
 
-	bdb := bloomdb.CreateDB()
+	bdb := bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
 	for _, destination := range mapping.Destinations {
 		wg.Add(1)
 		go func(destination Destination) {

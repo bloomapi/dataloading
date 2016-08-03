@@ -4,10 +4,11 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"github.com/gocodo/bloomdb"
+	"github.com/spf13/viper"
 )
 
 func Drop() error {
-	bloomdb := bloomdb.CreateDB()
+	bloomdb := bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
 
 	file, err := ioutil.ReadFile("dbmapping.yaml")
 	if err != nil {

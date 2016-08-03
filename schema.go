@@ -45,7 +45,7 @@ type SourceSchema struct {
 	Fields []FieldInfo
 }
 
-func schema (desc Description) ([]SourceSchema, error) {
+func Schema (desc Description) ([]SourceSchema, error) {
 	sources, err := desc.Available()
 	if err != nil {
 		return nil, err

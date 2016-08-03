@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"github.com/gocodo/bloomdb"
 	"github.com/mattbaird/elastigo/lib"
+	"github.com/spf13/viper"
 )
 
 func deNull(doc map[string]interface{}) {
@@ -183,7 +184,7 @@ func Index() error {
 		return err
 	}
 
-	bdb := bloomdb.CreateDB()
+	bdb := 	bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
 	conn, err := bdb.SqlConnection()
 	if err != nil {
 		return err
@@ -198,7 +199,9 @@ func Index() error {
 
 		fmt.Println("Processing", mapping.Name)
 
-		c := bdb.SearchConnection()
+		searchHosts := viper.GetStringSlice("searchHosts")
+		c := elastigo.NewConn()
+		c.SetHosts(searchHosts)
 
 		var lastUpdated time.Time
 		err = conn.QueryRow("SELECT last_updated FROM search_types WHERE name = $1", mapping.Name).Scan(&lastUpdated)

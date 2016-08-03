@@ -66,7 +66,7 @@ func TestDiscoversSchema(t *testing.T) {
 	spec := tests.Spec(t)
 
 	desc := &TestDescription{}
-	s, err := schema(desc)
+	s, err := Schema(desc)
 	if err != nil {
 		t.Error(err)
 	}

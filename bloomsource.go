@@ -76,7 +76,7 @@ func CreateCmd(desc Description) {
 			os.Exit(1)
 		}
 	case "schema":
-		schema, err := schema(desc)
+		schema, err := Schema(desc)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -14,7 +14,8 @@ var sqlTypes = map[string]string{
 	"boolean": "boolean",
 }
 
-func MappingToCreate(mapping *SourceMapping) string {
+
+func MappingToTableOnly(mapping *SourceMapping) string {
 	sources := (*mapping).Sources
 	var create string
 
@@ -40,6 +41,8 @@ func MappingToCreate(mapping *SourceMapping) string {
 						}
 					}
 				case []interface{}:
+					sqlType = "uuid"
+				case []string:
 					sqlType = "uuid"
 				}
 
@@ -78,6 +81,8 @@ func MappingToCreate(mapping *SourceMapping) string {
 					}
 				case []interface{}:
 					sqlType = "uuid"
+				case []string:
+					sqlType = "uuid"
 				}
 
 				create += field.Dest + " " + sqlType
@@ -94,7 +99,16 @@ func MappingToCreate(mapping *SourceMapping) string {
 
 			create += ");\n"
 		}
+	}
 
+	return create
+}
+
+func MappingToCreate(mapping *SourceMapping) string {
+	sources := (*mapping).Sources
+	create := MappingToTableOnly(mapping)
+
+	for _, source := range sources {
 		source_id := bloomdb.MakeKey(source.Name)
 		for _, destination := range source.Destinations {
 			table_id := bloomdb.MakeKey(source.Name, destination.Name)

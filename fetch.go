@@ -4,6 +4,7 @@ import (
 	"sort"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"github.com/spf13/viper"
 	"github.com/gocodo/bloomdb"
 )
 
@@ -30,7 +31,8 @@ func Fetch(desc Description) error {
 		return err
 	}
 
-	bdb := bloomdb.CreateDB()
+	bdb := bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
+
 	conn, err := bdb.SqlConnection()
 	if err != nil {
 		return err
@@ -83,7 +85,7 @@ func Fetch(desc Description) error {
 				action = source.Action
 			}
 
-			err = insert(reader, currentMappingSource, fields, action)
+			err = Insert(reader, currentMappingSource, fields, action)
 			if err != nil {
 				return err
 			}
