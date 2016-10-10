@@ -9,7 +9,6 @@ import (
 
 func IndexDrop() error {
 	bdb := bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
-
 	file, err := ioutil.ReadFile("searchmapping.yaml")
 	if err != nil {
 		return err
@@ -30,7 +29,7 @@ func IndexDrop() error {
 
 	for _, source := range mappings {
 		typeName := source.Name
-		_, err = searchConn.DeleteMapping(source.Name, "main")
+		_, err = searchConn.DeleteIndex(source.Name)
 		if err != nil {
 			return err
 		}
