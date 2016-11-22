@@ -106,7 +106,7 @@ func writeChannel(fields []MappingField, row Valuable, output chan []string) {
 	output <- values
 }
 
-func Insert(valueReader ValueReader, mapping Mapping, sourceNames []string, action string) error {
+func InsertWithDB(bdb *bloomdb.BloomDatabase, valueReader ValueReader, mapping Mapping, sourceNames []string, action string) error {
 	var wg sync.WaitGroup
 
 	channels := make(map[string] chan []string)
@@ -178,7 +178,6 @@ func Insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 		}
 	}()
 
-	bdb := bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
 	for _, destination := range mapping.Destinations {
 		wg.Add(1)
 		go func(destination Destination) {
@@ -220,4 +219,9 @@ func Insert(valueReader ValueReader, mapping Mapping, sourceNames []string, acti
 	wg.Wait()
 
 	return nil
+}
+
+func Insert(valueReader ValueReader, mapping Mapping, sourceNames []string, action string) error {
+	bdb := bloomdb.DBFromConfig(viper.GetString("sqlConnStr"), viper.GetStringSlice("searchHosts"))
+	return InsertWithDB(bdb, valueReader, mapping, sourceNames, action)
 }
