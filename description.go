@@ -1,4 +1,4 @@
-package bloomsource
+package dataloading
 
 type Valuable interface {
 	Value(string) (string, bool)

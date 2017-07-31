@@ -4,7 +4,7 @@ import (
 	"io"
 	"errors"
 	"archive/zip"
-	"bitbucket.org/gocodo/bloomsource"
+	"github.com/bloomapi/dataloading"
 	"github.com/tealeg/xlsx"
 )
 
@@ -62,7 +62,7 @@ func (r *XlxsReader) Headers() []string {
 	return headers
 }
 
-func (r *XlxsReader) Read() (bloomsource.Valuable, error) {
+func (r *XlxsReader) Read() (dataloading.Valuable, error) {
 	if r.currentRow >= len(r.sheet.Rows) {
 		return nil, io.EOF
 	}

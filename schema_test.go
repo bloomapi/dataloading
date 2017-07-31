@@ -1,9 +1,9 @@
-package bloomsource
+package dataloading
 
 import (
 	"testing"
 	"io"
-	"bitbucket.org/gocodo/bloomsource/tests"
+	"github.com/bloomapi/dataloading/tests"
 )
 
 type TestReader struct {

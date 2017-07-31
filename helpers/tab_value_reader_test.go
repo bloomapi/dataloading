@@ -3,7 +3,7 @@ package helpers
 import (
 	"strings"
 	"testing"
-	"bitbucket.org/gocodo/bloomsource/tests"
+	"github.com/bloomapi/dataloading/tests"
 )
 
 func TestTabValueReaderValue(t *testing.T) {

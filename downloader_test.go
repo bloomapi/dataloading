@@ -1,4 +1,4 @@
-package bloomsource
+package dataloading
 
 import (
 	"strings"
@@ -6,7 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"testing"
-	"bitbucket.org/gocodo/bloomsource/tests"
+	"github.com/bloomapi/dataloading/tests"
 )
 
 type mockReaderCloser struct {

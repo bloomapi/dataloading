@@ -1,4 +1,4 @@
-package bloomsource
+package dataloading
 
 type SourceMapping struct {
 	Sources []Mapping

@@ -3,7 +3,7 @@ package helpers
 import (
   "encoding/csv"
   "io"
-  "bitbucket.org/gocodo/bloomsource"
+  "github.com/bloomapi/dataloading"
 )
 
 type CsvTabReader struct {
@@ -43,7 +43,7 @@ func NewCsvTabReader(r io.Reader) *CsvTabReader {
   return &reader
 }
 
-func (r *CsvTabReader) Read() (bloomsource.Valuable, error) {
+func (r *CsvTabReader) Read() (dataloading.Valuable, error) {
   if len(r.headers) == 0 {
     row, err := r.reader.Read()
     if err != nil {

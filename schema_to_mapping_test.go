@@ -1,8 +1,8 @@
-package bloomsource
+package dataloading
 
 import (
 	"testing"
-	"bitbucket.org/gocodo/bloomsource/tests"
+	"github.com/bloomapi/dataloading/tests"
 )
 
 func TestSchemaToMapping(t *testing.T) {

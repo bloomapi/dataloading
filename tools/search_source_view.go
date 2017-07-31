@@ -1,4 +1,4 @@
-package bloomsource
+package dataloading
 
 type SearchSourceView struct {
 	Table string

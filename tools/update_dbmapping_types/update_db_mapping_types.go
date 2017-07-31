@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"io/ioutil"
-	"bitbucket.org/gocodo/bloomsource"
+	"github.com/bloomapi/dataloading"
 	"gopkg.in/yaml.v2"
 	"fmt"
 )
@@ -24,14 +24,14 @@ func main() {
 		return
 	}
 
-	toUpdate := bloomsource.SourceMapping{}
+	toUpdate := dataloading.SourceMapping{}
 	err = yaml.Unmarshal(fileToUpdate, &toUpdate)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	typesFrom := bloomsource.SourceMapping{}
+	typesFrom := dataloading.SourceMapping{}
 	err = yaml.Unmarshal(fileTypesFrom, &typesFrom)
 	if err != nil {
 		fmt.Println(err)
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	for _, toUpdateSource := range toUpdate.Sources {
-		var typesFromSource *bloomsource.Mapping
+		var typesFromSource *dataloading.Mapping
 		for _, i := range typesFrom.Sources {
 			if i.Name == toUpdateSource.Name {
 				typesFromSource = &i
@@ -51,8 +51,8 @@ func main() {
 			continue
 		}
 
-		typesFromFields := map[string]bloomsource.MappingField{}
-		toUpdateSourceFields := []*bloomsource.MappingField{}
+		typesFromFields := map[string]dataloading.MappingField{}
+		toUpdateSourceFields := []*dataloading.MappingField{}
 
 		for _, dest := range typesFromSource.Destinations {
 			for _, field := range dest.Fields {

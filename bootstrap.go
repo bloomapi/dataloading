@@ -1,4 +1,4 @@
-package bloomsource
+package dataloading
 
 import (
 	"io/ioutil"

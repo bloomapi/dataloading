@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"io"
 	"strings"
-	"bitbucket.org/gocodo/bloomsource"
+	"github.com/bloomapi/dataloading"
 )
 
 type TabReader struct {
@@ -48,7 +48,7 @@ func (r *TabReader) FieldNames() []string {
 	return fieldNames
 }
 
-func (r *TabReader) Read() (bloomsource.Valuable, error) {
+func (r *TabReader) Read() (dataloading.Valuable, error) {
 	if !r.scanner.Scan() {
 		if err := r.scanner.Err(); err != nil {
 			return nil, err

@@ -1,4 +1,4 @@
-package bloomsource
+package dataloading
 
 var searchSql = `
 SELECT row_to_json(root), root.{{.SearchSource.SearchId}} FROM
